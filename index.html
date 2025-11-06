@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerConnect - Smart Internship & Placement System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%234a6ee0;stop-opacity:1' /><stop offset='100%' style='stop-color:%236a11cb;stop-opacity:1' /></linearGradient></defs><rect width='100' height='100' fill='url(%23grad)' rx='15'/><path d='M30 35 L45 35 L45 50 L55 50 L55 35 L70 35 L70 65 L55 65 L55 50 L45 50 L45 65 L30 65 Z' fill='white'/><circle cx='50' cy='75' r='5' fill='white'/></svg>">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>CareerConnect</h2>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="homeLink">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="aboutLink">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="contactLink">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="loginNavLink">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="registerNavLink">Register</a>
+                </li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Homepage Section -->
+        <section id="homepageSection">
+            <header class="header_container">
+                <h1 class="header_title">Smart Internship & Placement System</h1>
+                <p class="header_desc">A centralized platform for students, companies, and administrators to manage internships and placement opportunities efficiently.</p>
+                <div class="header_actions">
+                    <button class="cta_btn" id="getStartedBtn">Get Started</button>
+                    <button class="cta_btn secondary" id="learnMoreBtn">Learn More</button>
+                </div>
+            </header>
+
+            <!-- Features Section -->
+            <section class="features_section">
+                <h2>Why Choose Our Platform?</h2>
+                <div class="features_grid">
+                    <div class="feature_card">
+                        <h3>For Students</h3>
+                        <p>Find internships, apply with your resume, and track your applications</p>
+                    </div>
+                    <div class="feature_card">
+                        <h3>For Companies</h3>
+                        <p>Post job opportunities, manage applications, and find talented students</p>
+                    </div>
+                    <div class="feature_card">
+                        <h3>Easy Management</h3>
+                        <p>Streamlined process for both students and companies</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats_section">
+                <div class="stats_grid">
+                    <div class="stat_card">
+                        <h3>150+</h3>
+                        <p>Students Registered</p>
+                    </div>
+                    <div class="stat_card">
+                        <h3>100+</h3>
+                        <p>Companies Partnered</p>
+                    </div>
+                    <div class="stat_card">
+                        <h3>200+</h3>
+                        <p>Successful Placements</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- About Section -->
+        <section id="aboutSection" class="content_section" style="display: none;">
+            <div class="about_container">
+                <h2>About CareerConnect</h2>
+                <div class="about_content">
+                    <p>Our platform bridges the gap between students seeking internships and companies looking for talented individuals. We provide a seamless experience for both parties to connect and grow together.</p>
+                    
+                    <h3>Our Mission</h3>
+                    <p>To create meaningful connections between students and companies, fostering professional growth and development.</p>
+                    
+                    <h3>Features</h3>
+                    <ul class="features_list">
+                        <li>Easy job posting for companies</li>
+                        <li>Simple application process for students</li>
+                        <li>Profile management with photo upload</li>
+                        <li>Application tracking system</li>
+                        <li>Professional dashboard interface</li>
+                        <li>Admin dashboard for oversight</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contactSection" class="content_section" style="display: none;">
+            <div class="contact_container">
+                <h2>Contact Us</h2>
+                <div class="contact_content">
+                    <div class="contact_info">
+                        <h3>Get In Touch</h3>
+                        <p>Have questions? We'd love to hear from you!</p>
+                        
+                        <div class="contact_item">
+                            <strong>Email:</strong> support@careerconnect.com
+                        </div>
+                        <div class="contact_item">
+                            <strong>Phone:</strong> +91 9987654321
+                        </div>
+                        <div class="contact_item">
+                            <strong>Address:</strong>Graphic Era, Dehradun, Bharat
+                        </div>
+                    </div>
+                    
+                    <form class="contact_form" id="contactForm">
+                        <div class="form_group">
+                            <label for="contactName">Your Name</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        <div class="form_group">
+                            <label for="contactEmail">Your Email</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="form_group">
+                            <label for="contactMessage">Your Message</label>
+                            <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit_btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="loginSection" class="login_container" style="display: none;">
+            <h2>Login to Your Account</h2>
+            <form id="loginForm" class="login_form">
+                <div class="form_group">
+                    <label for="userType">I am a:</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Select User Type</option>
+                        <option value="student">Student</option>
+                        <option value="company">Company</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div class="form_group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form_group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login_btn">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
+        </section>
+
+        <!-- Demo Accounts Section -->
+        <section id="demoAccountsSection" class="demo_accounts_container" style="display: none;">
+            <!-- <h2>Demo Accounts</h2>
+            <div class="demo_accounts">
+                <div class="demo_account_card">
+                    <h3>Student Account</h3>
+                    <p><strong>Email:</strong> rahul@student.com</p>
+                    <p><strong>Password:</strong> password123</p>
+                </div>
+                <div class="demo_account_card">
+                    <h3>Company Account</h3>
+                    <p><strong>Email:</strong> hr@google.com</p>
+                    <p><strong>Password:</strong> password123</p>
+                </div>
+                <div class="demo_account_card">
+                    <h3>Admin Account</h3>
+                    <p><strong>Email:</strong> admin@placement.com</p>
+                    <p><strong>Password:</strong> password123</p>
+                </div>
+            </div> -->
+        </section>
+
+        <!-- Registration Section -->
+        <section id="registerSection" class="register_container" style="display: none;">
+            <h2>Create New Account</h2>
+            <form id="registerForm" class="register_form">
+                <div class="form_group">
+                    <label for="regUserType">I am a:</label>
+                    <select id="regUserType" name="userType" required>
+                        <option value="">Select User Type</option>
+                        <option value="student">Student</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
+                <div class="form_group">
+                    <label for="regName">Full Name / Company Name:</label>
+                    <input type="text" id="regName" name="name" required>
+                </div>
+                <div class="form_group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" name="email" required>
+                </div>
+                <div class="form_group">
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" name="password" required>
+                </div>
+                <div id="studentFields" class="additional_fields">
+                    <div class="form_group">
+                        <label for="regMajor">Major/Field of Study:</label>
+                        <input type="text" id="regMajor" name="major">
+                    </div>
+                    <div class="form_group">
+                        <label for="regYear">Academic Year:</label>
+                        <input type="text" id="regYear" name="academicYear">
+                    </div>
+                </div>
+                <div id="companyFields" class="additional_fields">
+                    <div class="form_group">
+                        <label for="regIndustry">Industry:</label>
+                        <input type="text" id="regIndustry" name="industry">
+                    </div>
+                    <div class="form_group">
+                        <label for="regWebsite">Website:</label>
+                        <input type="url" id="regWebsite" name="website">
+                    </div>
+                </div>
+                <button type="submit" class="register_btn">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" id="showLogin">Login here</a></p>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" style="display: none;">
+            <div class="dashboard_header">
+                <div class="dashboard_user_info">
+                    <div class="profile_photo_container">
+                        <img id="profilePhoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a6ee0'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👤%3C/text%3E%3C/svg%3E" 
+                             alt="Profile Photo" class="profile_photo">
+                        <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+                        <button class="upload_btn" onclick="document.getElementById('photoUpload').click()">📷</button>
+                    </div>
+                    <div class="user_info">
+                        <h2 id="dashboardTitle">Dashboard</h2>
+                        <p id="userEmail" class="user_email"></p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="logout_btn">Logout</button>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div id="studentDashboard" class="user_dashboard" style="display: none;">
+                <div class="dashboard_actions">
+                    <button id="viewJobsBtn" class="action_btn">View Available Jobs</button>
+                    <button id="myApplicationsBtn" class="action_btn">My Applications</button>
+                </div>
+                
+                <div id="jobsContainer" class="main_container"></div>
+                
+                <div id="applicationsContainer" class="main_container" style="display: none;"></div>
+            </div>
+
+            <!-- Company Dashboard -->
+            <div id="companyDashboard" class="user_dashboard" style="display: none;">
+                <div class="dashboard_actions">
+                    <button id="postJobBtn" class="action_btn">Post New Job</button>
+                    <button id="viewPostedJobsBtn" class="action_btn">View My Job Posts</button>
+                    <button id="viewApplicationsBtn" class="action_btn">View Applications</button>
+                </div>
+                
+                <div id="postJobFormContainer" style="display: none;">
+                    <h3>Post New Job Opportunity</h3>
+                    <form id="postJobForm" class="job_form">
+                        <div class="form_group">
+                            <label for="jobTitle">Job Title:</label>
+                            <input type="text" id="jobTitle" name="title" required>
+                        </div>
+                        <div class="form_group">
+                            <label for="jobDescription">Job Description:</label>
+                            <textarea id="jobDescription" name="description" rows="4" required></textarea>
+                        </div>
+                        <div class="form_group">
+                            <label for="jobRequirements">Requirements:</label>
+                            <textarea id="jobRequirements" name="requirements" rows="3" required></textarea>
+                        </div>
+                        <div class="form_group">
+                            <label for="jobLocation">Location:</label>
+                            <input type="text" id="jobLocation" name="location" required>
+                        </div>
+                        <div class="form_group">
+                            <label for="jobType">Job Type:</label>
+                            <select id="jobType" name="type" required>
+                                <option value="internship">Internship</option>
+                                <option value="fulltime">Full-time</option>
+                                <option value="parttime">Part-time</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit_btn">Post Job</button>
+                    </form>
+                </div>
+                
+                <div id="companyJobsContainer" class="main_container"></div>
+                
+                <div id="companyApplicationsContainer" class="main_container" style="display: none;"></div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="user_dashboard" style="display: none;">
+                <div class="dashboard_actions">
+                    <button id="manageStudentsBtn" class="action_btn">Manage Students</button>
+                    <button id="manageCompaniesBtn" class="action_btn">Manage Companies</button>
+                    <button id="viewAllJobsBtn" class="action_btn">View All Jobs</button>
+                    <button id="viewAllApplicationsBtn" class="action_btn">View All Applications</button>
+                </div>
+                
+                <div id="adminContentContainer" class="main_container"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal" style="display: none;">
+        <div class="modal_content profile_modal_content">
+            <span class="close_btn">&times;</span>
+            <h3>Profile Details</h3>
+            <div class="profile_details">
+                <div class="profile_photo_large">
+                    <img id="modalProfilePhoto" src="" alt="Profile Photo" class="large_photo">
+                    <input type="file" id="modalPhotoUpload" accept="image/*" style="display: none;">
+                    <button class="change_photo_btn" onclick="document.getElementById('modalPhotoUpload').click()">Change Photo</button>
+                </div>
+                <div class="profile_info">
+                    <div class="form_group">
+                        <label>Name:</label>
+                        <input type="text" id="modalUserName" class="modal_input">
+                    </div>
+                    <div class="form_group">
+                        <label>Email:</label>
+                        <input type="email" id="modalUserEmail" class="modal_input" readonly>
+                    </div>
+                    <div class="form_group">
+                        <label>User Type:</label>
+                        <input type="text" id="modalUserType" class="modal_input" readonly>
+                    </div>
+                    <div id="studentAdditionalFields" style="display: none;">
+                        <div class="form_group">
+                            <label>Major:</label>
+                            <input type="text" id="modalUserMajor" class="modal_input">
+                        </div>
+                        <div class="form_group">
+                            <label>Academic Year:</label>
+                            <input type="text" id="modalUserYear" class="modal_input">
+                        </div>
+                    </div>
+                    <div id="companyAdditionalFields" style="display: none;">
+                        <div class="form_group">
+                            <label>Industry:</label>
+                            <input type="text" id="modalUserIndustry" class="modal_input">
+                        </div>
+                        <div class="form_group">
+                            <label>Website:</label>
+                            <input type="url" id="modalUserWebsite" class="modal_input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal_actions">
+                <button id="saveProfileBtn" class="save_btn">Save Changes</button>
+                <button id="deleteAccountBtn" class="delete_btn">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resume Upload Modal -->
+    <div id="resumeModal" class="modal" style="display: none;">
+        <div class="modal_content">
+            <span class="close_btn">&times;</span>
+            <h3>Upload Resume</h3>
+            <form id="resumeUploadForm">
+                <div class="form_group">
+                    <label for="resumeFile">Select PDF Resume:</label>
+                    <input type="file" id="resumeFile" name="resume" accept=".pdf" required>
+                    <small>Maximum file size: 5MB</small>
+                </div>
+                <input type="hidden" id="applyJobId">
+                <div class="modal_actions">
+                    <button type="submit" class="submit_btn">Upload & Apply</button>
+                    <button type="button" class="cancel_btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interview Modal -->
+    <div id="interviewModal" class="modal" style="display: none;">
+        <div class="modal_content">
+            <span class="close_btn">&times;</span>
+            <h3>Schedule Interview</h3>
+            <form id="interviewForm">
+                <div class="form_group">
+                    <label for="interviewDate">Interview Date:</label>
+                    <input type="date" id="interviewDate" name="interviewDate" required>
+                </div>
+                <div class="form_group">
+                    <label for="interviewTime">Interview Time:</label>
+                    <input type="time" id="interviewTime" name="interviewTime" required>
+                </div>
+                <div class="form_group">
+                    <label for="interviewMode">Interview Mode:</label>
+                    <select id="interviewMode" name="interviewMode" required>
+                        <option value="online">Online</option>
+                        <option value="in-person">Offline</option>
+                    </select>
+                </div>
+                <div class="form_group">
+                    <label for="interviewLocation">Location/Meeting Link:</label>
+                    <input type="text" id="interviewLocation" name="interviewLocation" required>
+                </div>
+                <div class="form_group">
+                    <label for="additionalNotes">Additional Notes:</label>
+                    <textarea id="additionalNotes" name="additionalNotes" rows="3"></textarea>
+                </div>
+                <input type="hidden" id="interviewApplicationId">
+                <div class="modal_actions">
+                    <button type="submit" class="submit_btn">Schedule Interview</button>
+                    <button type="button" class="cancel_btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
