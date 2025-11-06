@@ -7,25 +7,6 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-app.use(cors({
-    origin: [
-        'https://career-connect-01.netlify.app/',
-        'http://localhost:3000',
-        'http://localhost:5001'
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-
-app.options('*', cors());
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
 const app = express();
 const PORT = process.env.PORT || 5001;
 
