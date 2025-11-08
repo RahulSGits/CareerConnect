@@ -4,16 +4,31 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+app.use(cors({
+    origin: [
+        'https://career-connect-01.netlify.app/',
+        'http://localhost:3000',
+        'http://localhost:5001'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
+// Create uploads directory if it doesn't exist
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
     fs.mkdirSync('uploads/resumes');
@@ -70,7 +85,7 @@ const profilePhotoUpload = multer({
     }
 });
 
-// MySQL Connection with environment variables
+// MySQL Connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
@@ -85,228 +100,6 @@ db.connect((err) => {
     }
     console.log('✅ Connected to MySQL database');
 });
-
-// ✅ CORRECTED: Email Configuration - FIXED TYPO (createTransport not createTransporter)
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-    }
-});
-
-// Test email configuration
-transporter.verify(function(error, success) {
-    if (error) {
-        console.log('❌ Email configuration error:', error);
-    } else {
-        console.log('✅ Email server is ready to send messages');
-    }
-});
-
-// Real Email function
-async function sendEmail(to, subject, message) {
-    try {
-        const mailOptions = {
-            from: process.env.EMAIL_USER || 'careerconnect@example.com',
-            to: to,
-            subject: subject,
-            text: message,
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <div style="background: linear-gradient(135deg, #4a6ee0, #6a11cb); padding: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0;">CareerConnect</h1>
-                    </div>
-                    <div style="padding: 20px; background: #f9f9f9;">
-                        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                            ${message.replace(/\n/g, '<br>')}
-                        </div>
-                    </div>
-                    <div style="background: #333; color: white; padding: 15px; text-align: center;">
-                        <p style="margin: 0;">&copy; 2024 CareerConnect. All rights reserved.</p>
-                    </div>
-                </div>
-            `
-        };
-
-        const result = await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent successfully to:', to);
-        return true;
-    } catch (error) {
-        console.error('❌ Error sending email:', error);
-        return false;
-    }
-}
-
-// Enhanced Interview Email function
-async function sendInterviewEmail(studentEmail, studentName, interviewData) {
-    const emailMessage = `
-Dear ${studentName},
-
-Congratulations! You have been selected for an interview.
-
-Interview Details:
-- Date: ${interviewData.date}
-- Time: ${interviewData.time}
-- Mode: ${interviewData.mode}
-- Location/Link: ${interviewData.location}
-${interviewData.notes ? `- Additional Notes: ${interviewData.notes}` : ''}
-
-Please make sure to be on time and prepared.
-
-Best regards,
-CareerConnect Team
-    `;
-
-    const htmlMessage = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #4a6ee0, #6a11cb); padding: 20px; text-align: center;">
-                <h1 style="color: white; margin: 0;">CareerConnect - Interview Scheduled</h1>
-            </div>
-            <div style="padding: 20px; background: #f9f9f9;">
-                <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <h2 style="color: #4a6ee0;">Congratulations, ${studentName}! 🎉</h2>
-                    <p>You have been selected for an interview. Here are the details:</p>
-                    
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                        <h3 style="color: #333; margin-top: 0;">Interview Details</h3>
-                        <table style="width: 100%;">
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold; width: 120px;">Date:</td>
-                                <td style="padding: 8px 0;">${interviewData.date}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Time:</td>
-                                <td style="padding: 8px 0;">${interviewData.time}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Mode:</td>
-                                <td style="padding: 8px 0;">${interviewData.mode}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Location/Link:</td>
-                                <td style="padding: 8px 0;">${interviewData.location}</td>
-                            </tr>
-                            ${interviewData.notes ? `
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Notes:</td>
-                                <td style="padding: 8px 0;">${interviewData.notes}</td>
-                            </tr>
-                            ` : ''}
-                        </table>
-                    </div>
-                    
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #4a6ee0;">
-                        <h4 style="margin-top: 0; color: #004085;">📝 Preparation Tips</h4>
-                        <ul style="margin-bottom: 0;">
-                            <li>Research the company beforehand</li>
-                            <li>Prepare your questions for the interviewer</li>
-                            <li>Test your equipment if it's an online interview</li>
-                            <li>Be ready 10-15 minutes early</li>
-                        </ul>
-                    </div>
-                    
-                    <p style="margin-top: 20px;">We wish you the best of luck! 🚀</p>
-                </div>
-            </div>
-            <div style="background: #333; color: white; padding: 15px; text-align: center;">
-                <p style="margin: 0;">&copy; 2024 CareerConnect. All rights reserved.</p>
-            </div>
-        </div>
-    `;
-
-    try {
-        const mailOptions = {
-            from: process.env.EMAIL_USER || 'careerconnect@example.com',
-            to: studentEmail,
-            subject: 'Interview Scheduled - CareerConnect',
-            text: emailMessage,
-            html: htmlMessage
-        };
-
-        const result = await transporter.sendMail(mailOptions);
-        console.log('✅ Interview email sent successfully to:', studentEmail);
-        return true;
-    } catch (error) {
-        console.error('❌ Error sending interview email:', error);
-        return false;
-    }
-}
-
-// Enhanced Application Email function
-async function sendApplicationEmail(studentEmail, studentName, jobTitle, companyName) {
-    const emailMessage = `
-Dear ${studentName},
-
-Your application for "${jobTitle}" at ${companyName} has been submitted successfully.
-
-We will review your application and get back to you soon. You can track your application status from your dashboard.
-
-Best regards,
-CareerConnect Team
-    `;
-
-    const htmlMessage = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #4a6ee0, #6a11cb); padding: 20px; text-align: center;">
-                <h1 style="color: white; margin: 0;">CareerConnect - Application Submitted</h1>
-            </div>
-            <div style="padding: 20px; background: #f9f9f9;">
-                <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <h2 style="color: #4a6ee0;">Application Submitted Successfully! ✅</h2>
-                    <p>Dear <strong>${studentName}</strong>,</p>
-                    
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                        <h3 style="color: #333; margin-top: 0;">Application Details</h3>
-                        <table style="width: 100%;">
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold; width: 100px;">Position:</td>
-                                <td style="padding: 8px 0;">${jobTitle}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Company:</td>
-                                <td style="padding: 8px 0;">${companyName}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 0; font-weight: bold;">Status:</td>
-                                <td style="padding: 8px 0; color: #28a745; font-weight: bold;">Submitted</td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <p>Your application has been received and is under review. We will notify you once there's an update.</p>
-                    
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #4a6ee0;">
-                        <h4 style="margin-top: 0; color: #004085;">📊 Track Your Application</h4>
-                        <p>You can track your application status from your student dashboard at any time.</p>
-                    </div>
-                    
-                    <p>Best of luck! 🚀</p>
-                </div>
-            </div>
-            <div style="background: #333; color: white; padding: 15px; text-align: center;">
-                <p style="margin: 0;">&copy; 2024 CareerConnect. All rights reserved.</p>
-            </div>
-        </div>
-    `;
-
-    try {
-        const mailOptions = {
-            from: process.env.EMAIL_USER || 'careerconnect@example.com',
-            to: studentEmail,
-            subject: `Application Submitted - ${jobTitle}`,
-            text: emailMessage,
-            html: htmlMessage
-        };
-
-        const result = await transporter.sendMail(mailOptions);
-        console.log('✅ Application confirmation email sent to:', studentEmail);
-        return true;
-    } catch (error) {
-        console.error('❌ Error sending application email:', error);
-        return false;
-    }
-}
 
 // Register User
 app.post('/api/register', (req, res) => {
@@ -352,7 +145,7 @@ app.post('/api/register', (req, res) => {
                     return res.status(400).json({ error: 'Invalid user type' });
                 }
 
-                db.query(insertQuery, insertParams, async (err, result) => {
+                db.query(insertQuery, insertParams, (err, result) => {
                     if (err) {
                         console.error(err);
                         return res.status(500).json({ error: 'Registration failed' });
@@ -365,12 +158,8 @@ app.post('/api/register', (req, res) => {
                         userType
                     };
                     
-                    // Send welcome email
-                    await sendEmail(
-                        email,
-                        'Welcome to CareerConnect!',
-                        `Dear ${name},\n\nWelcome to CareerConnect! Your account has been successfully created.\n\nBest regards,\nCareerConnect Team`
-                    );
+                    // Email sending removed
+                    console.log(`New ${userType} registered: ${name} (${email})`);
                     
                     res.json({ 
                         message: 'Registration successful', 
@@ -477,21 +266,6 @@ app.put('/api/companies/:id', (req, res) => {
 });
 
 // Upload Profile Photo
-app.post('/api/upload-profile-photo/:userId', profilePhotoUpload.single('profilePhoto'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-    
-    const userId = req.params.userId;
-    const photoPath = `/uploads/profile_photos/${req.file.filename}`;
-    
-    res.json({ 
-        message: 'Profile photo uploaded successfully',
-        photoPath: photoPath
-    });
-});
-
-// Enhanced Profile Photo Upload API endpoint
 app.post('/api/upload-profile-photo/:userId/:userType', profilePhotoUpload.single('profilePhoto'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
@@ -501,7 +275,6 @@ app.post('/api/upload-profile-photo/:userId/:userType', profilePhotoUpload.singl
     const userType = req.params.userType;
     const photoPath = `/uploads/profile_photos/${req.file.filename}`;
     
-    // Update database with photo path based on user type
     let updateQuery;
     if (userType === 'student') {
         updateQuery = 'UPDATE students SET profile_photo = ? WHERE id = ?';
@@ -524,7 +297,7 @@ app.post('/api/upload-profile-photo/:userId/:userType', profilePhotoUpload.singl
     });
 });
 
-// Get Profile Photo API endpoint
+// Get Profile Photo
 app.get('/api/profile-photo/:userId/:userType', (req, res) => {
     const userId = req.params.userId;
     const userType = req.params.userType;
@@ -680,13 +453,13 @@ app.delete('/api/jobs/:jobId', (req, res) => {
     });
 });
 
-// Apply for job with resume upload - Enhanced with email
-app.post('/api/applications', resumeUpload.single('resume'), async (req, res) => {
+// Apply for job with resume upload
+app.post('/api/applications', resumeUpload.single('resume'), (req, res) => {
     const { studentId, jobId } = req.body;
     const resumeFile = req.file ? req.file.filename : null;
 
     const checkQuery = 'SELECT * FROM applications WHERE student_id = ? AND job_id = ?';
-    db.query(checkQuery, [studentId, jobId], async (err, results) => {
+    db.query(checkQuery, [studentId, jobId], (err, results) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
@@ -694,52 +467,16 @@ app.post('/api/applications', resumeUpload.single('resume'), async (req, res) =>
         
         if (results.length === 0) {
             const insertQuery = 'INSERT INTO applications (student_id, job_id, resume_file) VALUES (?, ?, ?)';
-            db.query(insertQuery, [studentId, jobId, resumeFile], async (err, result) => {
+            db.query(insertQuery, [studentId, jobId, resumeFile], (err, result) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json({ error: 'Failed to submit application' });
                 }
                 
-                // Send application confirmation email
-                try {
-                    const studentQuery = 'SELECT name, email FROM students WHERE id = ?';
-                    const jobQuery = 'SELECT title, company_id FROM jobs WHERE id = ?';
-                    const companyQuery = 'SELECT name FROM companies WHERE id = ?';
-                    
-                    db.query(studentQuery, [studentId], (err, studentResults) => {
-                        if (err || studentResults.length === 0) {
-                            console.log('Student not found for email');
-                            return res.json({ message: 'Application submitted successfully' });
-                        }
-                        
-                        db.query(jobQuery, [jobId], (err, jobResults) => {
-                            if (err || jobResults.length === 0) {
-                                console.log('Job not found for email');
-                                return res.json({ message: 'Application submitted successfully' });
-                            }
-                            
-                            const student = studentResults[0];
-                            const job = jobResults[0];
-                            
-                            db.query(companyQuery, [job.company_id], async (err, companyResults) => {
-                                const companyName = companyResults.length > 0 ? companyResults[0].name : 'the company';
-                                
-                                // Send application confirmation email
-                                await sendApplicationEmail(
-                                    student.email,
-                                    student.name,
-                                    job.title,
-                                    companyName
-                                );
-                                
-                                res.json({ message: 'Application submitted successfully' });
-                            });
-                        });
-                    });
-                } catch (emailError) {
-                    console.error('Email sending failed but application was submitted:', emailError);
-                    res.json({ message: 'Application submitted successfully' });
-                }
+                // Email sending removed - just log to console
+                console.log(`✅ Application submitted: Student ${studentId} for Job ${jobId}`);
+                
+                res.json({ message: 'Application submitted successfully' });
             });
         } else {
             return res.status(400).json({ error: 'Already applied for this job' });
@@ -840,30 +577,8 @@ app.put('/api/applications/:applicationId', (req, res) => {
             return res.status(404).json({ error: 'Application not found' });
         }
 
-        if (status === 'interview') {
-            const applicationQuery = `
-                SELECT a.*, s.name as studentName, s.email as studentEmail, j.title as jobTitle
-                FROM applications a
-                JOIN students s ON a.student_id = s.id
-                JOIN jobs j ON a.job_id = j.id
-                WHERE a.id = ?
-            `;
-            
-            db.query(applicationQuery, [req.params.applicationId], async (err, applicationResults) => {
-                if (!err && applicationResults.length > 0) {
-                    const application = applicationResults[0];
-                    const interviewData = {
-                        date: interview_date,
-                        time: interview_time,
-                        mode: interview_mode,
-                        location: interview_location,
-                        notes: interview_notes
-                    };
-                    
-                    await sendInterviewEmail(application.studentEmail, application.studentName, interviewData);
-                }
-            });
-        }
+        // Email sending removed - just log to console
+        console.log(`✅ Application ${req.params.applicationId} updated to status: ${status}`);
         
         res.json({ message: 'Application updated successfully' });
     });
@@ -941,7 +656,7 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📧 Email server configured`);
-    console.log(`💾 Database: internship_placement`);
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Email functionality removed`);
+    console.log(`Database: internship_placement`);
 });
