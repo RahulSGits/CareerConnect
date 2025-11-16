@@ -1,6 +1,7 @@
-// const API_BASE_URL = 'http://localhost:5001/api';
-
-const API_BASE_URL = 'https://careerconnect-backend.onrender.com/api';
+// API Configuration - Update this URL when deploying
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:5001/api' 
+    : 'https://your-backend-url.onrender.com/api';
 
 // DOM Elements
 const navbar = document.querySelector('.navbar');
@@ -15,7 +16,6 @@ const registerNavLink = document.getElementById('registerNavLink');
 const homepageSection = document.getElementById('homepageSection');
 const aboutSection = document.getElementById('aboutSection');
 const contactSection = document.getElementById('contactSection');
-const demoAccountsSection = document.getElementById('demoAccountsSection');
 const loginSection = document.getElementById('loginSection');
 const registerSection = document.getElementById('registerSection');
 const dashboardSection = document.getElementById('dashboardSection');
@@ -103,8 +103,13 @@ function initializeApp() {
     // Check if user is already logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        showDashboard();
+        try {
+            currentUser = JSON.parse(savedUser);
+            showDashboard();
+        } catch (e) {
+            localStorage.removeItem('currentUser');
+            showHomepage();
+        }
     } else {
         showHomepage();
     }
@@ -271,7 +276,6 @@ function showContact() {
 
 function showLogin() {
     hideAllSections();
-    demoAccountsSection.style.display = 'block';
     loginSection.style.display = 'block';
     updateNavActiveState('login');
 }
@@ -300,7 +304,6 @@ function hideAllSections() {
     homepageSection.style.display = 'none';
     aboutSection.style.display = 'none';
     contactSection.style.display = 'none';
-    demoAccountsSection.style.display = 'none';
     loginSection.style.display = 'none';
     registerSection.style.display = 'none';
     dashboardSection.style.display = 'none';
@@ -392,7 +395,7 @@ async function handleLogin(e) {
             }
         } catch (error) {
             console.error('Login error:', error);
-            showNotification('Login Error', 'An error occurred during login. Please try again.', 'error');
+            showNotification('Login Error', 'Unable to connect to server. Please try again later.', 'error');
         }
     }, submitButton);
 }
@@ -440,7 +443,7 @@ async function handleRegister(e) {
             }
         } catch (error) {
             console.error('Registration error:', error);
-            showNotification('Registration Error', 'An error occurred during registration. Please try again.', 'error');
+            showNotification('Registration Error', 'Unable to connect to server. Please try again later.', 'error');
         }
     }, submitButton);
 }
@@ -477,7 +480,7 @@ async function handleContact(e) {
             }
         } catch (error) {
             console.error('Contact form error:', error);
-            showNotification('Message Error', 'An error occurred while sending your message. Please try again.', 'error');
+            showNotification('Message Error', 'Unable to send message. Please try again later.', 'error');
         }
     }, submitButton);
 }
@@ -485,7 +488,6 @@ async function handleContact(e) {
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
-    localStorage.removeItem(`profilePhoto_${currentUser ? currentUser.id : ''}`);
     showNotification('Logged Out', 'You have been successfully logged out.', 'info');
     showHomepage();
     loginForm.reset();
@@ -525,9 +527,24 @@ function showDashboard() {
 
 // Profile Management Functions
 function loadProfilePhoto() {
-    const savedPhoto = localStorage.getItem(`profilePhoto_${currentUser.id}`);
+    const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
+    const savedPhoto = localStorage.getItem(userPhotoKey);
+    
     if (savedPhoto) {
         profilePhoto.src = savedPhoto;
+    } else {
+        // Set default photo based on user type
+        const defaultStudentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a6ee0'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍🎓%3C/text%3E%3C/svg%3E";
+        const defaultCompanyPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236a11cb'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E🏢%3C/text%3E%3C/svg%3E";
+        const defaultAdminPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2317a2b8'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍💼%3C/text%3E%3C/svg%3E";
+        
+        if (currentUser.userType === 'student') {
+            profilePhoto.src = defaultStudentPhoto;
+        } else if (currentUser.userType === 'company') {
+            profilePhoto.src = defaultCompanyPhoto;
+        } else if (currentUser.userType === 'admin') {
+            profilePhoto.src = defaultAdminPhoto;
+        }
     }
 }
 
@@ -538,11 +555,24 @@ function showProfileModal() {
     document.getElementById('modalUserType').value = currentUser.userType;
     
     // Load current profile photo
-    const savedPhoto = localStorage.getItem(`profilePhoto_${currentUser.id}`);
+    const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
+    const savedPhoto = localStorage.getItem(userPhotoKey);
+    
     if (savedPhoto) {
         modalProfilePhoto.src = savedPhoto;
     } else {
-        modalProfilePhoto.src = profilePhoto.src;
+        // Set default photo based on user type
+        const defaultStudentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a6ee0'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍🎓%3C/text%3E%3C/svg%3E";
+        const defaultCompanyPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236a11cb'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E🏢%3C/text%3E%3C/svg%3E";
+        const defaultAdminPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2317a2b8'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍💼%3C/text%3E%3C/svg%3E";
+        
+        if (currentUser.userType === 'student') {
+            modalProfilePhoto.src = defaultStudentPhoto;
+        } else if (currentUser.userType === 'company') {
+            modalProfilePhoto.src = defaultCompanyPhoto;
+        } else if (currentUser.userType === 'admin') {
+            modalProfilePhoto.src = defaultAdminPhoto;
+        }
     }
     
     // Show additional fields based on user type
@@ -568,27 +598,62 @@ function hideProfileModal() {
     profileModal.style.display = 'none';
 }
 
-function handlePhotoUpload(event) {
+async function handlePhotoUpload(event) {
     const file = event.target.files[0];
     if (file) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showNotification('Invalid File', 'Please select an image file.', 'error');
+            return;
+        }
+        
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            showNotification('File Too Large', 'Please select an image smaller than 2MB.', 'error');
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
+            // Update both profile photos
             profilePhoto.src = e.target.result;
-            localStorage.setItem(`profilePhoto_${currentUser.id}`, e.target.result);
+            modalProfilePhoto.src = e.target.result;
+            
+            // Save to localStorage with user-specific key
+            const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
+            localStorage.setItem(userPhotoKey, e.target.result);
+            
             showNotification('Profile Photo Updated', 'Your profile photo has been updated successfully!', 'success');
         };
         reader.readAsDataURL(file);
     }
 }
 
-function handleModalPhotoUpload(event) {
+async function handleModalPhotoUpload(event) {
     const file = event.target.files[0];
     if (file) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showNotification('Invalid File', 'Please select an image file.', 'error');
+            return;
+        }
+        
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            showNotification('File Too Large', 'Please select an image smaller than 2MB.', 'error');
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
+            // Update both profile photos
             modalProfilePhoto.src = e.target.result;
             profilePhoto.src = e.target.result;
-            localStorage.setItem(`profilePhoto_${currentUser.id}`, e.target.result);
+            
+            // Save to localStorage with user-specific key
+            const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
+            localStorage.setItem(userPhotoKey, e.target.result);
+            
             showNotification('Profile Photo Updated', 'Your profile photo has been updated successfully!', 'success');
         };
         reader.readAsDataURL(file);
@@ -681,7 +746,8 @@ async function deleteAccount() {
             if (response.ok) {
                 showNotification('Account Deleted', 'Your account has been deleted successfully!', 'success');
                 // Clear profile photo from localStorage
-                localStorage.removeItem(`profilePhoto_${currentUser.id}`);
+                const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
+                localStorage.removeItem(userPhotoKey);
                 handleLogout();
             } else {
                 showNotification('Account Deletion Failed', result.error || 'Failed to delete account.', 'error');
@@ -1289,11 +1355,9 @@ async function loadAllCompanies() {
     }
 }
 
-
 function displayAllCompanies(companies) {
     adminContentContainer.innerHTML = '';
     
-    // Create a flex container
     const container = document.createElement('div');
     container.style.cssText = `
         display: flex;
@@ -1302,7 +1366,6 @@ function displayAllCompanies(companies) {
         width: 100%;
     `;
     
-    // Add header
     const header = document.createElement('h3');
     header.textContent = 'All Registered Companies';
     header.style.margin = '0';
@@ -1314,7 +1377,6 @@ function displayAllCompanies(companies) {
         message.style.color = 'var(--gray-color)';
         container.appendChild(message);
     } else {
-        // Add table
         const table = document.createElement('table');
         table.className = 'admin_table';
         table.style.width = '100%';
@@ -1425,7 +1487,6 @@ async function loadAllApplications() {
 function displayAllApplications(applications) {
     adminContentContainer.innerHTML = '';
     
-    // Create simple container
     const container = document.createElement('div');
     container.style.cssText = `
         display: flex;
@@ -1435,7 +1496,6 @@ function displayAllApplications(applications) {
         width: 100%;
     `;
     
-    // Header on first line
     const header = document.createElement('h3');
     header.textContent = 'All Applications';
     header.style.margin = '0';
@@ -1447,7 +1507,6 @@ function displayAllApplications(applications) {
         message.style.color = 'var(--gray-color)';
         container.appendChild(message);
     } else {
-        // Table on next line
         const table = document.createElement('table');
         table.className = 'admin_table';
         table.style.cssText = `
@@ -1484,163 +1543,4 @@ function displayAllApplications(applications) {
     }
     
     adminContentContainer.appendChild(container);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// Add these functions to your script.js
-
-// Enhanced Photo Upload Handler
-async function handlePhotoUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            showNotification('Invalid File', 'Please select an image file.', 'error');
-            return;
-        }
-        
-        // Validate file size (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            showNotification('File Too Large', 'Please select an image smaller than 2MB.', 'error');
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Update both profile photos
-            profilePhoto.src = e.target.result;
-            modalProfilePhoto.src = e.target.result;
-            
-            // Save to localStorage with user-specific key
-            const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
-            localStorage.setItem(userPhotoKey, e.target.result);
-            
-            showNotification('Profile Photo Updated', 'Your profile photo has been updated successfully!', 'success');
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Enhanced Modal Photo Upload Handler
-async function handleModalPhotoUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            showNotification('Invalid File', 'Please select an image file.', 'error');
-            return;
-        }
-        
-        // Validate file size (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            showNotification('File Too Large', 'Please select an image smaller than 2MB.', 'error');
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Update both profile photos
-            modalProfilePhoto.src = e.target.result;
-            profilePhoto.src = e.target.result;
-            
-            // Save to localStorage with user-specific key
-            const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
-            localStorage.setItem(userPhotoKey, e.target.result);
-            
-            showNotification('Profile Photo Updated', 'Your profile photo has been updated successfully!', 'success');
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Enhanced Profile Photo Loader
-function loadProfilePhoto() {
-    const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
-    const savedPhoto = localStorage.getItem(userPhotoKey);
-    
-    if (savedPhoto) {
-        profilePhoto.src = savedPhoto;
-        
-        // Set a default photo based on user type if no photo exists
-        const defaultStudentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a6ee0'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍🎓%3C/text%3E%3C/svg%3E";
-        const defaultCompanyPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236a11cb'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E🏢%3C/text%3E%3C/svg%3E";
-        const defaultAdminPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2317a2b8'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍💼%3C/text%3E%3C/svg%3E";
-        
-        if (!savedPhoto) {
-            if (currentUser.userType === 'student') {
-                profilePhoto.src = defaultStudentPhoto;
-            } else if (currentUser.userType === 'company') {
-                profilePhoto.src = defaultCompanyPhoto;
-            } else if (currentUser.userType === 'admin') {
-                profilePhoto.src = defaultAdminPhoto;
-            }
-        }
-    }
-}
-
-// Enhanced Profile Modal Show Function
-function showProfileModal() {
-    // Populate modal with current user data
-    document.getElementById('modalUserName').value = currentUser.name;
-    document.getElementById('modalUserEmail').value = currentUser.email;
-    document.getElementById('modalUserType').value = currentUser.userType;
-    
-    // Load current profile photo
-    const userPhotoKey = `profilePhoto_${currentUser.id}_${currentUser.userType}`;
-    const savedPhoto = localStorage.getItem(userPhotoKey);
-    
-    if (savedPhoto) {
-        modalProfilePhoto.src = savedPhoto;
-    } else {
-        // Set default photo based on user type
-        const defaultStudentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a6ee0'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍🎓%3C/text%3E%3C/svg%3E";
-        const defaultCompanyPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236a11cb'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E🏢%3C/text%3E%3C/svg%3E";
-        const defaultAdminPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2317a2b8'/%3E%3Ctext x='50' y='60' font-family='Arial' font-size='40' text-anchor='middle' fill='white'%3E👨‍💼%3C/text%3E%3C/svg%3E";
-        
-        if (currentUser.userType === 'student') {
-            modalProfilePhoto.src = defaultStudentPhoto;
-        } else if (currentUser.userType === 'company') {
-            modalProfilePhoto.src = defaultCompanyPhoto;
-        } else if (currentUser.userType === 'admin') {
-            modalProfilePhoto.src = defaultAdminPhoto;
-        }
-    }
-    
-    // Show additional fields based on user type
-    if (currentUser.userType === 'student') {
-        document.getElementById('studentAdditionalFields').style.display = 'block';
-        document.getElementById('companyAdditionalFields').style.display = 'none';
-        document.getElementById('modalUserMajor').value = currentUser.major || '';
-        document.getElementById('modalUserYear').value = currentUser.academicYear || '';
-    } else if (currentUser.userType === 'company') {
-        document.getElementById('studentAdditionalFields').style.display = 'none';
-        document.getElementById('companyAdditionalFields').style.display = 'block';
-        document.getElementById('modalUserIndustry').value = currentUser.industry || '';
-        document.getElementById('modalUserWebsite').value = currentUser.website || '';
-    } else {
-        document.getElementById('studentAdditionalFields').style.display = 'none';
-        document.getElementById('companyAdditionalFields').style.display = 'none';
-    }
-    
-    profileModal.style.display = 'flex';
-}
-
-// Enhanced Logout Function
-function handleLogout() {
-    // Don't clear profile photos on logout - they are user-specific
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    showNotification('Logged Out', 'You have been successfully logged out.', 'info');
-    showHomepage();
-    loginForm.reset();
 }
